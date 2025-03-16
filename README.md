@@ -1,0 +1,2 @@
+# Qiita_AutoPublishCI
+QiitaCLIを用いた記事管理でfeatureブランチからmainブランチにPRを作成した時に記事投稿&amp;更新をしてくれるCIツール
