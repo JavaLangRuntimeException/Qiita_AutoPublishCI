@@ -1,0 +1,15 @@
+{
+  "devDependencies": {
+    "@qiita/qiita-cli": "^1.6.1"
+  },
+  "scripts": {
+    "push": "qiita publish --credential .",
+    "edit": "qiita preview --credential .",
+    "pull": "qiita pull --credential ."
+  },
+  "dependencies": {
+    "axios": "^1.8.3",
+    "cspell": "^8.17.5",
+    "gray-matter": "^4.0.3"
+  }
+}

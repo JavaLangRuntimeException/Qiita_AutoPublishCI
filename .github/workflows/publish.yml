@@ -1,0 +1,54 @@
+name: Publish and Sync Qiita Articles
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  qiita-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.16.0'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Qiita sync script
+        env:
+          QIITA_TOKEN: ${{ secrets.QIITA_TOKEN }}
+        run: node scripts/qiita_sync.js
+
+      - name: Commit and push diff
+        env:
+          COMMIT_MESSAGE: update by qiita_sync[bot]
+        run: |
+          git add ./public/*
+          if ! git diff --staged --exit-code; then
+            git config --global user.name 'github-actions[bot]'
+            git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          
+            echo "### 現在の差分 (git diff) ###"
+            git diff --color || true
+            echo "############################"
+            echo "以下の変更内容をコミットします："
+            git diff --color || true
+            git commit -m "${COMMIT_MESSAGE}"
+            echo "コミット完了．push を実行します..."
+            git push origin HEAD:refs/heads/${{ github.head_ref }}
+          else
+            echo "更新対象のファイルはありません"
+          fi
+        shell: bash
